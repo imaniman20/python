@@ -1,0 +1,56 @@
+import mysql.connector
+import re
+import hashlib
+
+cnx = mysql.connector.connect(
+    host = "localhost",
+    user = "root",
+    password = "",
+    database = ""
+)
+
+def correct_email(email):
+    pattern = "^[a-zA-Z][a-zA-Z\\d]+\\@[a-zA-Z]+\\.[a-zA-z]{2,3}"
+    result = re.search(pattern, email)
+
+    if result:
+        if result.group() == email:
+            return 0
+        else:
+            return 1
+    else:
+        return 1
+
+def correct_password(password):
+    pattern = "[a-zA-Z\\d]+"
+    result = re.search(pattern, password)
+
+    if result:
+        if result.group() == password:
+            return 0
+        else:
+            return 1
+    else:
+        return 1
+        
+count = int(input("How many emails do you want to confirm :"))
+cursor = cnx.cursor()
+
+i = 0
+while (i < count):
+    email = input("username: ")
+    password = input("password :")
+
+    email_check = correct_email(email)
+    password_check = correct_password(password)
+
+    i += 1
+    if email_check == 1 or password_check == 1:
+        print("your email or password format is not correct\ncorrect email format : expression@string.string\n")
+        i -= 1
+        continue
+    else: 
+        cursor.execute("INSERT INTO email VALUES (\'%s\', \'%s\');" %(email, password))
+
+cnx.commit()
+cnx.close()
